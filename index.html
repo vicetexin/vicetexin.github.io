@@ -130,6 +130,10 @@
     .reveal.in .title > span { transform: none; }
     .reveal.in .label, .reveal.in .meta, .reveal.in .fade { opacity: 1; }
 
+    /* Hero: one slice of every project, side by side */
+    .hero .bg.strip { display: flex; gap: 2px; background: var(--bg); }
+    .hero .bg.strip > * { flex: 1 1 0; min-width: 0; width: 100%; height: 100%; filter: brightness(0.4) saturate(0.8); }
+
     /* Hero */
     .hero .title { font-size: clamp(72px, 19vw, 300px); }
     .hero .tagline {
@@ -239,7 +243,13 @@
 
   <main>
     <section class="card hero reveal" id="top" style="--scene: radial-gradient(ellipse at 50% 40%, #2a1d3d 0%, #120d1a 55%, #060508 100%);">
-      <div class="bg"></div>
+      <div class="bg strip" aria-hidden="true">
+        <video src="media/forge.mp4" poster="media/forge.jpg" autoplay muted loop playsinline preload="metadata"></video>
+        <video src="media/scrapyard.mp4" poster="media/scrapyard.jpg" autoplay muted loop playsinline preload="metadata"></video>
+        <video class="pixel" src="media/bumpers.mp4" poster="media/bumpers.jpg" autoplay muted loop playsinline preload="metadata"></video>
+        <img src="media/worms.jpg" alt="">
+        <video src="media/hyperspace.mp4" poster="media/hyperspace.jpg" autoplay muted loop playsinline preload="metadata"></video>
+      </div>
       <div class="stack">
         <span class="label">Unity developer · Chile</span>
         <h1 class="title"><span>Vicente<br>Martinez</span></h1>
@@ -261,7 +271,7 @@
         <dl class="meta">
           <div><dt>Role</dt><dd>Lead Unity developer</dd></div>
           <div><dt>Focus</dt><dd>Card system, core architecture</dd></div>
-          <div><dt>Status</dt><dd>In development</dd></div>
+          <div><dt>Status</dt><dd><a href="https://store.steampowered.com/app/3911490/Forge_the_Fates/">Coming soon on Steam</a></dd></div>
         </dl>
       </div>
     </section>
@@ -289,7 +299,7 @@
         <dl class="meta">
           <div><dt>Role</dt><dd>Unity developer</dd></div>
           <div><dt>Focus</dt><dd>Input, gameplay content, VFX</dd></div>
-          <div><dt>Team</dt><dd>Medium-sized studio team</dd></div>
+          <div><dt>Status</dt><dd><a href="https://store.steampowered.com/app/4377860/Bumpers__Dragons/">Q4 2026 on Steam</a></dd></div>
         </dl>
       </div>
     </section>
