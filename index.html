@@ -193,6 +193,36 @@
       color: var(--ink);
     }
 
+    /* Watch mode: hide the text and show the footage undimmed */
+    .card .bg video, .card .bg img, .hero .bg.strip > * { transition: filter 0.6s ease; }
+    .card::after, .card .stack, .scroll-cue { transition: opacity 0.5s ease; }
+    .card.watching .bg video, .card.watching .bg img, .hero.watching .bg.strip > * { filter: none; }
+    .card.watching::after, .card.watching .stack, .hero.watching .scroll-cue { opacity: 0; pointer-events: none; }
+    .card.watching { cursor: pointer; }
+
+    .watch {
+      position: fixed;
+      z-index: 10;
+      right: clamp(16px, 4vw, 48px);
+      bottom: 24px;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.7em;
+      padding: 10px 14px;
+      font: 500 11px/1 var(--body);
+      letter-spacing: 0.3em;
+      text-transform: uppercase;
+      color: var(--ink);
+      background: rgba(10, 10, 11, 0.45);
+      border: 1px solid var(--line);
+      backdrop-filter: blur(6px);
+      cursor: pointer;
+      transition: background 0.2s, color 0.2s, opacity 0.3s;
+    }
+    .watch[hidden] { display: inline-flex; opacity: 0; pointer-events: none; }
+    .watch:hover, .watch:focus-visible { background: var(--ink); color: var(--bg); }
+    .watch .ico { width: 1.4em; height: 1.4em; }
+
     /* Per-chapter palettes, borrowed from Remedy's title cards */
     .c-forge   { --accent: #c4302b; --scene: radial-gradient(ellipse at 60% 40%, #1f3a1c 0%, #0b140a 55%, #050705 100%); }
     .c-scrap   { --accent: #e3a33a; --scene: radial-gradient(ellipse at 40% 35%, #3a2a17 0%, #150f08 55%, #070504 100%); }
@@ -241,6 +271,7 @@
     @media (prefers-reduced-motion: reduce) {
       html { scroll-behavior: auto; }
       .reveal .title > span, .reveal .label, .reveal .meta, .reveal .fade { transition: none; }
+      .card .bg video, .card .bg img, .hero .bg.strip > *, .card::after, .card .stack, .scroll-cue { transition: none; }
     }
   </style>
 </head>
@@ -390,6 +421,43 @@
     } else {
       cards.forEach((c) => c.classList.add("in"));
     }
+
+    // Watch mode: one corner button that hides the text on whichever card is in view
+    const watchable = [...document.querySelectorAll(".card")].filter((c) => c.querySelector(".bg video, .bg img"));
+    const watchBtn = document.createElement("button");
+    watchBtn.type = "button";
+    watchBtn.className = "watch";
+    watchBtn.innerHTML = '<svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></svg><span>Watch</span>';
+    document.body.append(watchBtn);
+    let current = null;
+
+    function setWatching(on) {
+      if (current) current.classList.toggle("watching", on);
+      watchBtn.setAttribute("aria-pressed", on);
+      watchBtn.lastChild.textContent = on ? "Show info" : "Watch";
+    }
+
+    // The card under the middle of the screen; leaving one puts its text back
+    function track() {
+      const mid = innerHeight / 2;
+      const next = watchable.find((c) => {
+        const r = c.getBoundingClientRect();
+        return r.top <= mid && r.bottom > mid;
+      }) || null;
+      if (next === current) return;
+      setWatching(false);
+      current = next;
+      watchBtn.hidden = !current;
+    }
+
+    watchBtn.addEventListener("click", () => setWatching(!current.classList.contains("watching")));
+    watchable.forEach((c) => c.addEventListener("click", () => {
+      if (c.classList.contains("watching")) setWatching(false);
+    }));
+    document.addEventListener("keydown", (e) => { if (e.key === "Escape") setWatching(false); });
+    addEventListener("scroll", track, { passive: true });
+    addEventListener("resize", track);
+    track();
   </script>
 </body>
 </html>
